@@ -10,8 +10,6 @@
 
 ## 🔑 Key Concepts
 
--
-
 ---
 
 ## 💻 Code Example
@@ -24,13 +22,9 @@
 
 ## ❓ Interview Questions
 
-1. 
-
 ---
 
 ## 🔗 Related Topics
-
--
 
 ---
 
