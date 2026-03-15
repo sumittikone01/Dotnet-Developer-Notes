@@ -3,6 +3,8 @@
 
 ---
 
+
+
 ## 🎯 One-Line Definition
 
 > **ViewBag is a `dynamic` property on the controller that wraps ViewData — it passes data from controller to view using dot-notation instead of dictionary syntax, but it's the exact same underlying dictionary with no type safety and no IntelliSense.**

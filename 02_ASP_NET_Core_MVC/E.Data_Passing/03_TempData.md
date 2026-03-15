@@ -3,6 +3,8 @@
 
 ---
 
+
+
 ## 🎯 One-Line Definition
 
 > **`TempData` stores data that survives exactly one redirect — you set it before a `RedirectToAction()` and read it in the next request, after which it is automatically deleted.**

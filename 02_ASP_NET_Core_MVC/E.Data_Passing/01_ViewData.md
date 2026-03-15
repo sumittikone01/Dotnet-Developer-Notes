@@ -3,6 +3,8 @@
 
 ---
 
+
+
 ## 🎯 One-Line Definition
 
 > **ViewData is a dictionary (`ViewDataDictionary`) on the controller that passes data from a controller action to its view — data lives only for the duration of the current request and must be cast when read.**
