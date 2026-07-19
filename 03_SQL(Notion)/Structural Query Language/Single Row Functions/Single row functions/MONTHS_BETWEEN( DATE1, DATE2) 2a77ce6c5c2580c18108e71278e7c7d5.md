@@ -1,0 +1,45 @@
+# MONTHS_BETWEEN( DATE1, DATE2)
+
+Sr_no: 12
+
+## MONTHS_BETWEEN( DATE1, DATE2):
+
+1. It is used to obtain the number of months present between two dates. 
+
+<aside>
+❓
+
+Examples: 
+
+```sql
+SELECT MONTHS_BETWEEN('7-JAN-2025','1-DEC-1990') 
+FROM DUAL;
+```
+
+![image.png](MONTHS_BETWEEN(%20DATE1,%20DATE2)/image.png)
+
+```sql
+SELECT ROUND(MONTHS_BETWEEN(SYSDATE,HIREDATE))
+FROM EMP;
+```
+
+![image.png](MONTHS_BETWEEN(%20DATE1,%20DATE2)/image%201.png)
+
+</aside>
+
+<aside>
+❓
+
+WAQTD DETAILS OF EMP IF THEY HAVE MORE THAN 15 YEARS OF EXPERIENCE IN COMPANY
+
+```sql
+SELECT EMP.*,TRUNC(MONTHS_BETWEEN(SYSDATE,HIREDATE)/12) AS EXPERIENCE
+FROM EMP 
+WHERE TRUNC(MONTHS_BETWEEN(SYSDATE,HIREDATE)) > 15*12;
+```
+
+![image.png](MONTHS_BETWEEN(%20DATE1,%20DATE2)/image%202.png)
+
+</aside>
+
+[TO_CHAR() *](TO_CHAR()%202a77ce6c5c2580459c1be617fdba195c.md)
