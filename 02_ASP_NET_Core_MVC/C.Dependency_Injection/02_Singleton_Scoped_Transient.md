@@ -1,3 +1,111 @@
+# 02 — Singleton, Scoped, and Transient
+
+## 📌 What is it?
+
+When you register a service with the DI container, you must choose its **lifetime** — how long a single instance of that service lives before a new one is created. ASP.NET Core has three lifetimes: **Transient**, **Scoped**, and **Singleton**.
+
+## 🤔 Why do we need it?
+
+Different services have different needs. A stateless helper class can be reused freely (Singleton). A service tied to a single HTTP request (like one using `DbContext`) needs a fresh instance per request (Scoped). Getting this wrong causes subtle, hard-to-debug bugs — especially around shared/leaked state.
+
+## 📊 The three lifetimes compared
+
+| Lifetime            | New instance created...                                           | Typical use case                                                      |
+| ------------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------- |
+| **Transient** | Every time it's requested/injected                                | Lightweight, stateless services (e.g., a simple calculator/formatter) |
+| **Scoped**    | Once per HTTP request (shared within that request)                | `DbContext`, anything tied to "this request's" data                 |
+| **Singleton** | Once for the entire application lifetime (shared by all requests) | Configuration objects, caching services, stateless utility services   |
+
+## 💻 Code example — registration syntax
+
+```csharp
+builder.Services.AddTransient<IEmailFormatter, EmailFormatter>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddSingleton<IAppCache, MemoryAppCache>();
+```
+
+## 🖼 Visualizing lifetimes across two simultaneous requests
+
+```
+Request A ──┐                          Request B ──┐
+            │                                       │
+   Transient: new instance      Transient: new instance
+   (fresh, every injection)     (fresh, every injection)
+            │                                       │
+   Scoped: ONE instance         Scoped: a DIFFERENT instance
+   shared within Request A      shared within Request B
+            │                                       │
+   Singleton: ────────────── SAME instance for BOTH ──────────────
+              (created once at app startup, reused everywhere)
+```
+
+## ⚙️ Practical example — why lifetime choice matters
+
+```csharp
+public class RequestLogger : IRequestLogger
+{
+    private readonly List<string> _logs = new();
+    public void Log(string message) => _logs.Add(message);
+    public IEnumerable<string> GetLogs() => _logs;
+}
+```
+
+- Registered as **Transient** → every class that injects `IRequestLogger` gets its own empty `_logs` list — logs never accumulate together, defeating the purpose.
+- Registered as **Scoped** → all classes within the *same request* share one `_logs` list — perfect for collecting logs across a single request's lifecycle.
+- Registered as **Singleton** → ALL requests across the app's entire lifetime share the SAME `_logs` list — memory grows forever, and logs from different users mix together (dangerous!).
+
+## 🚨 The "Captive Dependency" problem (a classic DI bug)
+
+**Never inject a Scoped or Transient service into a Singleton.** The Singleton is created once and holds onto that reference forever — effectively turning the Scoped/Transient service into a de facto Singleton too, causing stale or leaked data across requests.
+
+```csharp
+// ❌ DANGEROUS
+public class CacheService  // registered as Singleton
+{
+    private readonly AppDbContext _context; // Scoped — WRONG to inject here!
+
+    public CacheService(AppDbContext context) => _context = context;
+    // _context becomes "captured" — same DbContext instance reused forever,
+    // even though DbContext is meant to be short-lived per request
+}
+```
+
+ASP.NET Core will actually **throw an exception at runtime** (`Cannot consume scoped service from singleton`) if this is detected under default validation settings — a helpful safety net.
+
+## 📊 Lifetime compatibility matrix
+
+| Injecting into ↓ / Injected service → | Transient                                      | Scoped                              | Singleton |
+| --------------------------------------- | ---------------------------------------------- | ----------------------------------- | --------- |
+| **Transient**                     | ✅ OK                                          | ✅ OK                               | ✅ OK     |
+| **Scoped**                        | ✅ OK                                          | ✅ OK                               | ✅ OK     |
+| **Singleton**                     | ⚠️ OK but wasteful (loses transient benefit) | ❌ Captive dependency — will throw | ✅ OK     |
+
+## 🚨 Common mistakes
+
+- Registering `DbContext`-dependent services as Singleton — `DbContext` is explicitly designed to be Scoped (short-lived, per-request) because it's not thread-safe for concurrent use across requests.
+- Assuming Transient means "no memory cost" — creating too many Transient instances of expensive-to-construct objects can hurt performance; use Scoped or Singleton for expensive setup.
+- Storing per-request mutable state in a Singleton — causes data leaking between unrelated users' requests (a serious bug, sometimes even a security issue).
+
+## 💡 Best practices
+
+- Default to **Scoped** for most business/application services — it's the safest middle ground for typical web request-response work.
+- Use **Singleton** only for genuinely stateless or safely-shared services (configuration, caching infrastructure, logging infrastructure).
+- Use **Transient** for lightweight, cheap-to-construct, stateless helper classes.
+- Always register `DbContext` as Scoped (`AddDbContext<T>()` does this automatically).
+
+## 🎤 Interview questions
+
+1. Explain the difference between Transient, Scoped, and Singleton lifetimes with an example of when to use each.
+2. What is a "captive dependency," and why is injecting a Scoped service into a Singleton dangerous?
+3. Why must `DbContext` be registered as Scoped rather than Singleton?
+4. If you register a service as Transient but it holds an internal list that grows with every method call, what problem could arise?
+
+## 📝 30-second revision cheat sheet
+
+- **Transient** = new instance every injection. **Scoped** = one instance per HTTP request. **Singleton** = one instance for the app's whole lifetime.
+- Never inject Scoped/Transient into Singleton → "captive dependency" bug (framework often throws at runtime).
+- `DbContext` must always be Scoped.
+- Default choice for most services: **Scoped**
 
 # 02 — Singleton, Scoped, Transient
 
@@ -436,8 +544,8 @@ builder.Services.AddMemoryCache();
 | Which lifetime should a configuration service use?                | Singleton — read once, safe to share since it's read-only                                                                        |
 | Which lifetime should a stateless email sender use?               | Transient — lightweight, stateless, each send is independent                                                                     |
 | What is the Captured Dependency Problem?                          | Injecting a Scoped service into a Singleton — the Scoped instance lives as long as the Singleton, breaking per-request isolation |
-| How does ASP.NET Core help catch the captured dependency problem? | Throws `InvalidOperationException`in Development: "Cannot consume scoped service from singleton"                                |
+| How does ASP.NET Core help catch the captured dependency problem? | Throws`InvalidOperationException`in Development: "Cannot consume scoped service from singleton"                                 |
 | Is a Scoped service thread-safe?                                  | ✅ Yes — each request gets its own instance, so no shared state between simultaneous requests                                    |
 | Why must a Singleton be thread-safe?                              | It's shared across all simultaneous requests — multiple threads access it at once                                                |
-| What is `IServiceScopeFactory`used for?                         | Allows a Singleton to create a temporary Scoped context when it needs Scoped services                                             |
+| What is`IServiceScopeFactory`used for?                          | Allows a Singleton to create a temporary Scoped context when it needs Scoped services                                             |
 | What happens with two injections of a Transient in one request?   | Two different instances — Transient is never shared, even within the same request                                                |

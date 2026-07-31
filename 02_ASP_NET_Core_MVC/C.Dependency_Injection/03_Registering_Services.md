@@ -1,3 +1,142 @@
+# 03 — Registering Services
+
+## 📌 What is it?
+
+**Service registration** is the act of telling the DI container "when something asks for interface `X`, give them implementation `Y`, with lifetime `Z`." This happens in `Program.cs` via the `builder.Services` collection (an `IServiceCollection`).
+
+## 🤔 Why do we need it?
+
+The DI container can't guess which concrete class to use for an interface — every dependency must be explicitly registered before it can be injected anywhere. This registration step is what wires your entire application's object graph together.
+
+## 💻 Basic registration syntax
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+// Interface → Implementation
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddSingleton<IAppCache, MemoryAppCache>();
+builder.Services.AddTransient<IEmailFormatter, EmailFormatter>();
+
+// Framework services (MVC, Web API support)
+builder.Services.AddControllersWithViews();
+builder.Services.AddControllers(); // for API-only projects
+
+var app = builder.Build();
+```
+
+## ⚙️ Registration patterns beyond the basics
+
+### 1. Registering a concrete class without an interface
+
+```csharp
+builder.Services.AddScoped<ProductService>(); // no interface — used directly
+```
+
+Valid, but loses the flexibility of swapping implementations (e.g., for testing). Prefer interface-based registration when possible.
+
+### 2. Registering with a factory function (for complex construction logic)
+
+```csharp
+builder.Services.AddScoped<IProductService>(serviceProvider =>
+{
+    var config = serviceProvider.GetRequiredService<IConfiguration>();
+    var connectionString = config.GetConnectionString("Default");
+    return new ProductService(connectionString);
+});
+```
+
+### 3. Registering an already-created instance (Singleton only)
+
+```csharp
+var appSettings = new AppSettings { SiteName = "MyStore" };
+builder.Services.AddSingleton(appSettings); // instance registered directly
+```
+
+### 4. Registering multiple implementations of the same interface
+
+```csharp
+builder.Services.AddScoped<INotificationSender, EmailNotificationSender>();
+builder.Services.AddScoped<INotificationSender, SmsNotificationSender>();
+
+// Injecting IEnumerable<INotificationSender> gives you BOTH implementations
+public class NotificationService
+{
+    private readonly IEnumerable<INotificationSender> _senders;
+    public NotificationService(IEnumerable<INotificationSender> senders) => _senders = senders;
+}
+```
+
+### 5. Options pattern registration (binding config sections to strongly-typed classes)
+
+```csharp
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
+// Later, inject IOptions<SmtpSettings> anywhere — detailed in R.Configuration/04
+```
+
+## 🖼 Registration → Resolution flow
+
+```
+Program.cs                          Runtime (when a request comes in)
+─────────────                       ──────────────────────────────
+builder.Services
+  .AddScoped<IProductService,             DI Container looks up:
+             ProductService>()      ──▶   "Someone needs IProductService"
+                                           "I have ProductService registered for it"
+                                           "Lifetime = Scoped → reuse within this request"
+                                           → creates/returns a ProductService instance
+```
+
+## 📊 Common `Add...` extension methods you'll encounter
+
+| Method                                           | Purpose                                                              |
+| ------------------------------------------------ | -------------------------------------------------------------------- |
+| `AddControllersWithViews()`                    | Enables MVC with Views (Razor)                                       |
+| `AddControllers()`                             | Enables API controllers only (no Views)                              |
+| `AddDbContext<T>()`                            | Registers EF Core`DbContext` (Scoped by default)                   |
+| `AddHttpClient()`                              | Registers`HttpClient` with proper lifetime management              |
+| `AddAuthentication()` / `AddAuthorization()` | Registers auth services                                              |
+| `AddLogging()`                                 | Registers logging infrastructure (often already included by default) |
+| `AddScoped/Transient/Singleton<T>()`           | Registers your own custom services                                   |
+
+## 🚨 Common mistakes
+
+- Forgetting to register a service and getting a runtime error only when that specific code path executes (not at compile time) — DI registration errors are **not caught by the compiler**.
+- Registering the same interface multiple times without realizing it, then being surprised when `IEnumerable<T>` injection returns unexpected duplicates, or a single injection returns the **last** registered implementation.
+- Registering framework-required services (like `AddControllers()`) in the wrong order relative to custom services — generally order doesn't matter for registration itself, but it's good practice to group framework registrations together, then custom ones.
+
+## 💡 Best practices
+
+- Group related registrations into **extension methods** for readability in larger apps:
+  ```csharp
+  public static class ServiceCollectionExtensions
+  {
+      public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+      {
+          services.AddScoped<IProductService, ProductService>();
+          services.AddScoped<IOrderService, OrderService>();
+          return services;
+      }
+  }
+  // Program.cs
+  builder.Services.AddApplicationServices();
+  ```
+- Register services with the **narrowest lifetime that makes sense** (see topic 02) — don't default to Singleton "just because."
+- Use `TryAddScoped`/`TryAddTransient`/`TryAddSingleton` when writing reusable libraries, to avoid overriding a consumer's existing registration.
+
+## 🎤 Interview questions
+
+1. What happens if you forget to register a service that a Controller depends on? When does the error surface — compile time or runtime?
+2. How would you register multiple implementations of the same interface, and how do you consume all of them?
+3. What's the difference between `AddScoped<ProductService>()` and `AddScoped<IProductService, ProductService>()`?
+4. How can you organize service registration in a large application to keep `Program.cs` clean?
+
+## 📝 30-second revision cheat sheet
+
+- Registration happens via `builder.Services.Add...()` in `Program.cs`, before `builder.Build()`.
+- Common forms: interface→implementation, concrete-only, factory function, pre-built instance, multiple implementations.
+- Unregistered dependencies fail at **runtime**, not compile time.
+- Group custom registrations into extension methods for cleaner, more maintainable `Program.cs` files
 
 # 03 — Registering Services
 
@@ -462,15 +601,15 @@ app.Run();
 
 ## ⭐ Interview Quick-Fire
 
-| Question                                                                        | Answer                                                                                                         |
-| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Where do you register services?                                                 | `Program.cs`using `builder.Services.Add*<Interface, Implementation>()`— before `builder.Build()`        |
-| What is the difference between `AddScoped`,`AddSingleton`,`AddTransient`? | Scoped = per request, Singleton = whole app, Transient = per injection                                         |
-| What does `TryAddScoped`do differently?                                       | Only registers if the interface isn't already registered — prevents accidental overwrite                      |
-| What is a factory registration?                                                 | `AddScoped<IService>(provider => new MyImpl(...))`— you provide a lambda for custom construction            |
-| What happens if you register the same interface twice?                          | Last registration wins for single injection. Use `IEnumerable<T>`to consume all                              |
-| What does `GetRequiredService<T>`do vs `GetService<T>`?                     | `GetRequiredService`throws if not registered.`GetService`returns null. Prefer `GetRequiredService`always |
-| How do you keep Program.cs clean?                                               | Extract registrations into static extension methods on `IServiceCollection`                                  |
-| What does `ValidateOnBuild = true`catch?                                      | Missing service registrations and captured dependency bugs — at startup, not at runtime                       |
-| Can you register after `builder.Build()`?                                     | ❌ No — container is locked after `Build()`                                                                 |
-| What is `[FromServices]`used for?                                             | Resolves a service from DI directly into an action method parameter without adding it to the constructor       |
+| Question                                                                       | Answer                                                                                                         |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| Where do you register services?                                                | `Program.cs`using `builder.Services.Add*<Interface, Implementation>()`— before `builder.Build()`        |
+| What is the difference between`AddScoped`,`AddSingleton`,`AddTransient`? | Scoped = per request, Singleton = whole app, Transient = per injection                                         |
+| What does`TryAddScoped`do differently?                                       | Only registers if the interface isn't already registered — prevents accidental overwrite                      |
+| What is a factory registration?                                                | `AddScoped<IService>(provider => new MyImpl(...))`— you provide a lambda for custom construction            |
+| What happens if you register the same interface twice?                         | Last registration wins for single injection. Use`IEnumerable<T>`to consume all                               |
+| What does`GetRequiredService<T>`do vs `GetService<T>`?                     | `GetRequiredService`throws if not registered.`GetService`returns null. Prefer `GetRequiredService`always |
+| How do you keep Program.cs clean?                                              | Extract registrations into static extension methods on`IServiceCollection`                                   |
+| What does`ValidateOnBuild = true`catch?                                      | Missing service registrations and captured dependency bugs — at startup, not at runtime                       |
+| Can you register after`builder.Build()`?                                     | ❌ No — container is locked after`Build()`                                                                  |
+| What is`[FromServices]`used for?                                             | Resolves a service from DI directly into an action method parameter without adding it to the constructor       |

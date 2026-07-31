@@ -1,3 +1,93 @@
+# 01 — Conventional Routing
+
+## 📌 What is it?
+
+**Conventional routing** defines URL patterns **centrally** (in `Program.cs`) using a template that maps segments of the URL to `{controller}`, `{action}`, and parameter placeholders. Instead of specifying routes on every Controller/Action, one (or a few) route templates handle matching for the *entire* application by convention.
+
+## 🤔 Why do we need it?
+
+For traditional MVC apps with many Controllers, defining a route on every single action would be repetitive. Conventional routing lets you define the URL "shape" once, and every Controller/Action that follows the naming convention is automatically reachable — no per-action configuration needed.
+
+## 💻 Code example
+
+```csharp
+// Program.cs
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+```
+
+This single line defines the URL shape for the **entire app**:
+
+| URL                     | Matches                                                  |
+| ----------------------- | -------------------------------------------------------- |
+| `/`                   | `HomeController.Index()` (both segments use defaults)  |
+| `/Product`            | `ProductController.Index()` (action defaults to Index) |
+| `/Product/Details`    | `ProductController.Details()`                          |
+| `/Product/Details/42` | `ProductController.Details(int id)` — `id` = 42     |
+
+## 🖼 Anatomy of the route template
+
+```
+{controller=Home}/{action=Index}/{id?}
+     │                  │            │
+     │                  │            └── optional parameter (the ? makes it optional)
+     │                  └── defaults to "Index" if not in URL
+     └── defaults to "Home" if not in URL
+```
+
+- `{controller}` — matches the Controller class name (minus the "Controller" suffix)
+- `{action}` — matches the method name inside that Controller
+- `{id?}` — an optional route parameter, bound to an action parameter of the same name
+- `=Home` / `=Index` — default values used when that segment is missing from the URL
+
+## ⚙️ How matching actually works
+
+1. Incoming URL: `/Product/Details/42`
+2. ASP.NET Core splits it into segments: `Product`, `Details`, `42`
+3. Matches against the template: `controller=Product`, `action=Details`, `id=42`
+4. Looks for `ProductController` with an action method `Details` that accepts a parameter compatible with `id`
+
+## 📊 Multiple route definitions (order matters)
+
+```csharp
+app.MapControllerRoute(
+    name: "productSpecial",
+    pattern: "products/{category}/{id}",
+    defaults: new { controller = "Product", action = "Details" });
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+```
+
+Routes are evaluated **top to bottom** — the first matching route wins. So more specific routes should be registered **before** the general default route.
+
+## 🚨 Common mistakes
+
+- Defining a more general route **before** a specific one — the general route "wins" first and the specific one never gets a chance to match.
+- Forgetting the `?` on optional parameters, causing `/Product` (without an id) to 404 even though you intended `id` to be optional.
+- Assuming conventional routing and attribute routing (next topic) can't coexist — they absolutely can, and modern ASP.NET Core apps often mix both.
+
+## 💡 Best practices
+
+- Use conventional routing for **traditional MVC apps with Views** where URL patterns are fairly uniform (`/Controller/Action/id`).
+- Prefer **Attribute Routing** (next topic) for Web APIs, where URL patterns tend to be more varied and resource-oriented (`/api/products/{id}/reviews`).
+- Keep route ordering in mind — register specific/custom routes before the catch-all default route.
+
+## 🎤 Interview questions
+
+1. What does `{controller=Home}/{action=Index}/{id?}` mean, segment by segment?
+2. Why does route registration order matter with conventional routing?
+3. How would you add a custom route for `/products/electronics/42` that still maps to `ProductController.Details()`?
+4. What's the difference between a route default value and an optional route parameter?
+
+## 📝 30-second revision cheat sheet
+
+- Conventional routing = one central template (`{controller}/{action}/{id?}`) applies app-wide.
+- Registered in `Program.cs` via `app.MapControllerRoute(...)`.
+- `?` = optional parameter, `=value` = default value.
+- Route order matters — more specific routes go first
 
 # 01 — Conventional Routing
 
@@ -272,24 +362,24 @@ Use attribute for Web APIs and custom URL patterns.
 
 ## ⚠️ Common Conventional Routing Mistakes
 
-| Mistake                                    | What Happens                 | Fix                                                    |
-| ------------------------------------------ | ---------------------------- | ------------------------------------------------------ |
-| `app.UseRouting()`not called             | 404 for all routes           | Add `app.UseRouting()`before `MapControllerRoute`  |
-| More specific route after default          | Specific route never matched | Always register specific routes BEFORE default         |
-| Controller name not ending in "Controller" | Not found by routing         | Class must be `EmployeeController`, not `Employee` |
-| `{id}`without `?`                      | URL without id = 404         | Use `{id?}`for optional id                           |
+| Mistake                                    | What Happens                 | Fix                                                   |
+| ------------------------------------------ | ---------------------------- | ----------------------------------------------------- |
+| `app.UseRouting()`not called             | 404 for all routes           | Add`app.UseRouting()`before `MapControllerRoute`  |
+| More specific route after default          | Specific route never matched | Always register specific routes BEFORE default        |
+| Controller name not ending in "Controller" | Not found by routing         | Class must be`EmployeeController`, not `Employee` |
+| `{id}`without `?`                      | URL without id = 404         | Use`{id?}`for optional id                           |
 
 ---
 
 ## ⭐ Interview Quick-Fire
 
-| Question                                      | Answer                                                                                                             |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| What is Conventional Routing?                 | Routing defined once in `Program.cs`using a pattern —`{controller}/{action}/{id?}`maps all URLs automatically |
-| Where is the default route defined?           | `app.MapControllerRoute()`in `Program.cs`                                                                      |
-| What does `{controller=Home}`mean?          | The controller segment with a default value of "Home" — used when no controller in URL                            |
-| What does `{id?}`mean?                      | `?`makes id optional — URL works with or without it                                                             |
-| What URL does `/`map to by default?         | `HomeController.Index()`— both controller and action use their defaults                                         |
-| Which route wins when multiple match?         | The first one registered — order in `Program.cs`matters                                                         |
-| How to generate a URL from a route in a view? | `asp-controller="Employee" asp-action="Index"`Tag Helpers                                                        |
-| How to generate a URL in a controller?        | `Url.Action("Index", "Employee")`or `RedirectToAction("Index", "Employee")`                                    |
+| Question                                      | Answer                                                                                                            |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| What is Conventional Routing?                 | Routing defined once in`Program.cs`using a pattern —`{controller}/{action}/{id?}`maps all URLs automatically |
+| Where is the default route defined?           | `app.MapControllerRoute()`in `Program.cs`                                                                     |
+| What does`{controller=Home}`mean?           | The controller segment with a default value of "Home" — used when no controller in URL                           |
+| What does`{id?}`mean?                       | `?`makes id optional — URL works with or without it                                                            |
+| What URL does`/`map to by default?          | `HomeController.Index()`— both controller and action use their defaults                                        |
+| Which route wins when multiple match?         | The first one registered — order in`Program.cs`matters                                                         |
+| How to generate a URL from a route in a view? | `asp-controller="Employee" asp-action="Index"`Tag Helpers                                                       |
+| How to generate a URL in a controller?        | `Url.Action("Index", "Employee")`or `RedirectToAction("Index", "Employee")`                                   |

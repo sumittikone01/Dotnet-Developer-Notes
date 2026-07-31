@@ -1,0 +1,53 @@
+You are an expert reviewer, Senior Software Engineer, Technical Architect, Technical Interviewer, and Technical Author.
+
+Review the provided Markdown file.
+
+Do NOT rewrite the entire document.
+
+Assume this note is part of my personal software engineering knowledge base.
+
+Evaluate it for:
+
+• Technical accuracy
+• Missing concepts
+• Missing edge cases
+• Missing interview topics
+• Missing real-world scenarios
+• Missing best practices
+• Missing performance considerations
+• Missing security considerations (if applicable)
+• Missing debugging or troubleshooting tips (if applicable)
+• Missing comparison tables
+• Missing diagrams or flowcharts
+• Missing practical examples
+• Poor explanations
+• Unnecessary content
+• Repeated content
+• Poor organization
+• Poor readability
+• Poor revision friendliness
+• Outdated information
+• Incorrect terminology
+
+Do NOT suggest improvements just to make the document longer.
+
+Only recommend changes that genuinely improve quality.
+
+Output exactly in this format:
+
+# Overall Rating
+Technical Accuracy: /10
+Completeness: /10
+Readability: /10
+Revision Friendliness: /10
+Interview Readiness: /10
+
+# Critical Fixes
+
+# Important Improvements
+
+# Optional Improvements
+
+Do NOT rewrite the document unless a section is incorrect.
+
+If a section is already excellent, leave it unchanged.

@@ -42,7 +42,9 @@ DotNet-Developer-Notes/
 │   ├── 06_Type_Conversion_and_Casting.md
 │   ├── 07_Nullable_Types.md
 │   ├── 08_Operators.md
-│   └── 09_Control_Statements.md
+│   ├── 09_Control_Statements.md
+│   ├── 10_Comments_and_Naming_Conventions.md 
+│   └── 11_Namespaces_and_Using_Directives.md     
 │
 ├── B.Methods/
 │   ├── 01_Methods_Basics.md
@@ -50,66 +52,30 @@ DotNet-Developer-Notes/
 │   ├── 03_Optional_and_Named_Parameters.md
 │   ├── 04_ref_out_in_Keywords.md
 │   ├── 05_Method_Overloading.md
-│   └── 06_Recursion.md
+│   ├── 06_Recursion.md
+│   └── 07_Local_Functions.md                      
 │
-├── C.OOP/                              ← RIGHT after methods — where it belongs
-│   │
-│   ├── 01_Classes_and_Objects/
-│   │   ├── 01_Class_vs_Object.md
-│   │   ├── 02_Fields_Properties_Methods.md
-│   │   └── 03_this_Keyword.md
-│   │
-│   ├── 02_Encapsulation/
-│   │   ├── 01_Encapsulation_Concept.md
-│   │   ├── 02_Access_Modifiers.md
-│   │   ├── 03_Properties_Getters_Setters.md
-│   │   └── 04_Data_Hiding.md
-│   │
-│   ├── 03_Constructors/
-│   │   ├── 01_Default_Constructor.md
-│   │   ├── 02_Parameterized_Constructor.md
-│   │   ├── 03_Copy_Constructor.md
-│   │   ├── 04_Static_Constructor.md
-│   │   └── 05_Constructor_Chaining.md
-│   │
-│   ├── 04_Inheritance/
-│   │   ├── 01_Inheritance_Basics.md
-│   │   ├── 02_Base_and_Derived_Class.md
-│   │   ├── 03_Method_Hiding_vs_Overriding.md
-│   │   ├── 04_base_Keyword.md
-│   │   └── 05_Constructor_in_Inheritance.md
-│   │
-│   ├── 05_Polymorphism/
-│   │   ├── 01_Compile_Time_Method_Overloading.md
-│   │   ├── 02_Runtime_Method_Overriding.md
-│   │   ├── 03_virtual_override_new_Keywords.md
-│   │   └── 04_Upcasting_and_Downcasting.md
-│   │
+├── C.OOP/
+│   ├── 01_Classes_and_Objects/ ...
+│   ├── 02_Encapsulation/ ...
+│   ├── 03_Constructors/ ...
+│   ├── 04_Inheritance/ ...
+│   ├── 05_Polymorphism/ ...
 │   ├── 06_Abstraction/
 │   │   ├── 01_Abstract_Classes.md
 │   │   ├── 02_Interfaces.md
-│   │   ├── 03_Abstract_Class_vs_Interface.md      ← top interview question
-│   │   └── 04_Explicit_Interface_Implementation.md
-│   │
-│   ├── 07_Object_Relationships/
-│   │   ├── 01_Association.md
-│   │   ├── 02_Aggregation.md
-│   │   ├── 03_Composition.md
-│   │   └── 04_HAS_A_vs_IS_A.md
-│   │
+│   │   ├── 03_Abstract_Class_vs_Interface.md
+│   │   ├── 04_Explicit_Interface_Implementation.md
+│   │   └── 05_Interface_Default_Methods.md          
+│   ├── 07_Object_Relationships/ ...
 │   ├── 08_Advanced_OOP/
 │   │   ├── 01_Static_Classes_and_Members.md
 │   │   ├── 02_Sealed_Classes.md
 │   │   ├── 03_Partial_Classes.md
-│   │   └── 04_Object_Class_Methods.md             ← ToString, Equals, GetHashCode
-│   │
-│   └── 09_SOLID_Principles/
-│       ├── 01_Single_Responsibility.md
-│       ├── 02_Open_Closed.md
-│       ├── 03_Liskov_Substitution.md
-│       ├── 04_Interface_Segregation.md
-│       ├── 05_Dependency_Inversion.md
-│       └── 06_SOLID_in_Controller_BAL_DAL.md      ← real project example
+│   │   ├── 04_Object_Class_Methods.md
+│   │   ├── 05_Equality_and_IEquatable.md             
+│   │   └── 06_Immutability_and_readonly.md            
+│   └── 09_SOLID_Principles/ ...
 │
 ├── D.Language_Features/
 │   ├── 01_Delegates.md
@@ -119,53 +85,22 @@ DotNet-Developer-Notes/
 │   ├── 05_Anonymous_Types.md
 │   ├── 06_Tuples_and_ValueTuple.md
 │   ├── 07_Records.md
-│   └── 08_Pattern_Matching.md
+│   ├── 08_Pattern_Matching.md
+│   ├── 09_Nullable_Reference_Types.md                
+│   └── 10_init_Only_Setters.md                       
 │
-├── E.Collections/                      ← deep, sub-categorized
-│   │
-│   ├── 00_Collection_Interfaces.md     ← IEnumerable, ICollection, IList, IDictionary
-│   │
-│   ├── 01_Arrays/
-│   │   ├── 01_Array_Basics.md
-│   │   ├── 02_Multidimensional_Arrays.md
-│   │   ├── 03_Jagged_Arrays.md
-│   │   └── 04_Array_Class_Methods.md
-│   │
-│   ├── 02_List/
-│   │   ├── 01_List_T_Basics.md
-│   │   ├── 02_List_Methods.md
-│   │   └── 03_List_vs_Array.md
-│   │
-│   ├── 03_Dictionary/
-│   │   ├── 01_Dictionary_TKey_TValue.md
-│   │   ├── 02_SortedDictionary.md
-│   │   ├── 03_ConcurrentDictionary.md
-│   │   └── 04_Dictionary_Patterns.md
-│   │
-│   ├── 04_Sets/
-│   │   ├── 01_HashSet_T.md
-│   │   └── 02_SortedSet_T.md
-│   │
-│   ├── 05_Queue_and_Stack/
-│   │   ├── 01_Queue_T.md
-│   │   ├── 02_Stack_T.md
-│   │   └── 03_PriorityQueue.md
-│   │
-│   ├── 06_LinkedList/
-│   │   └── 01_LinkedList_T.md
-│   │
-│   ├── 07_Strings/
-│   │   ├── 01_String_Basics.md
-│   │   ├── 02_String_Methods.md
-│   │   ├── 03_StringBuilder.md
-│   │   └── 04_String_Interning_and_Immutability.md
-│   │
-│   └── 08_Generics/
-│       ├── 01_Generics_Overview.md
-│       ├── 02_Generic_Classes.md
-│       ├── 03_Generic_Methods.md
-│       ├── 04_Generic_Constraints.md
-│       └── 05_Covariance_and_Contravariance.md
+├── E.Collections/
+│   ├── 00_Collection_Interfaces.md
+│   ├── 01_Arrays/ ...
+│   ├── 02_List/ ...
+│   ├── 03_Dictionary/ ...
+│   ├── 04_Sets/ ...
+│   ├── 05_Queue_and_Stack/ ...
+│   ├── 06_LinkedList/ ...
+│   ├── 07_Strings/ ...
+│   ├── 08_Generics/ ...
+│   ├── 09_IEnumerable_Custom_Iterators_yield.md     
+│   └── 10_Span_T_and_Memory_T.md                   
 │
 ├── F.LINQ/
 │   ├── 01_LINQ_Overview.md
@@ -173,7 +108,9 @@ DotNet-Developer-Notes/
 │   ├── 03_Method_Syntax.md
 │   ├── 04_Filtering_Projection_Ordering.md
 │   ├── 05_Grouping_and_Joining.md
-│   └── 06_Aggregates_and_Set_Operations.md
+│   ├── 06_Aggregates_and_Set_Operations.md
+│   ├── 07_Deferred_vs_Immediate_Execution.md        
+│   └── 08_LINQ_Performance_Pitfalls.md               
 │
 ├── G.Modern_CSharp/
 │   ├── 01_Null_Conditional_and_Coalescing.md
@@ -185,20 +122,30 @@ DotNet-Developer-Notes/
 ├── H.Exception_Handling/
 │   ├── 01_try_catch_finally.md
 │   ├── 02_Exception_Types_Hierarchy.md
-│   └── 03_Custom_Exceptions.md
+│   ├── 03_Custom_Exceptions.md
+│   ├── 04_Exception_Handling_Best_Practices.md      
+│   └── 05_Global_Exception_Handling.md              
 │
 ├── I.Async_and_Concurrency/
 │   ├── 01_Threads_Overview.md
 │   ├── 02_Task_and_Task_T.md
 │   ├── 03_Async_Await.md
 │   ├── 04_ConfigureAwait.md
-│   └── 05_CancellationToken.md
+│   ├── 05_CancellationToken.md
+│   ├── 06_Deadlocks_and_Common_Async_Mistakes.md     
+│   └── 07_Parallel_and_Multithreading_Basics.md      
 │
-└── J.Memory_and_Runtime/
-    ├── 01_Garbage_Collection.md
-    ├── 02_IDisposable_and_using.md        ← critical for ADO.NET connections
-    ├── 03_Stack_vs_Heap.md
-    └── 04_Boxing_and_Unboxing.md
+├── J.Memory_and_Runtime/
+│   ├── 01_Garbage_Collection.md
+│   ├── 02_IDisposable_and_using.md
+│   ├── 03_Stack_vs_Heap.md
+│   ├── 04_Boxing_and_Unboxing.md
+│   └── 05_Memory_Leaks_in_NET.md                   
+│
+└── K.Testing_and_Debugging/                          
+    ├── 01_Unit_Testing_Basics_xUnit_NUnit.md
+    ├── 02_Mocking_with_Moq.md
+    └── 03_Debugging_Techniques_and_Breakpoints.md
 ```
 
 ---
@@ -214,7 +161,8 @@ DotNet-Developer-Notes/
 │   ├── 03_MVC_Architecture.md
 │   ├── 04_Request_Processing_Pipeline.md
 │   ├── 05_Program_cs_and_Startup.md
-│   └── 06_Project_Structure.md
+│   ├── 06_Project_Structure.md
+│   └── 07_Minimal_APIs_vs_MVC.md                     
 │
 ├── B.MVC_Pattern/
 │   ├── 01_Model_Responsibilities.md
@@ -222,55 +170,67 @@ DotNet-Developer-Notes/
 │   ├── 03_Controller_Responsibilities.md
 │   └── 04_MVC_Request_Flow.md
 │
-├── C.Controllers/
-│   ├── 01_Creating_Controllers.md
-│   ├── 02_Action_Methods.md
-│   ├── 03_IActionResult_vs_ActionResult_T.md
-│   ├── 04_Action_Results_Types.md
-│   ├── 05_Model_Binding_in_Controllers.md
-│   └── 06_Controller_Base_vs_ControllerBase.md
-│
-├── D.Views/
-│   ├── 01_Razor_View_Engine.md
-│   ├── 02_Razor_Syntax.md
-│   ├── 03_Layout_Pages.md
-│   ├── 04_Partial_Views.md
-│   ├── 05_View_Components.md
-│   └── 06_Tag_Helpers.md
-│
-├── E.Data_Passing/
-│   ├── 01_ViewData.md
-│   ├── 02_ViewBag.md
-│   ├── 03_TempData.md
-│   └── 04_Strongly_Typed_Views.md
-│
-├── F.Routing/
+├── C.Routing/                                     
 │   ├── 01_Conventional_Routing.md
 │   ├── 02_Attribute_Routing.md
 │   ├── 03_Route_Constraints.md
 │   └── 04_Route_Parameters.md
 │
-├── G.Model_Handling/
-│   ├── 01_Model_Binding.md
-│   ├── 02_Model_Validation.md
-│   ├── 03_Data_Annotations.md
-│   └── 04_Fluent_Validation.md
-│
-├── H.Dependency_Injection/
+├── D.Dependency_Injection/                           
 │   ├── 01_DI_Overview.md
 │   ├── 02_Singleton_Scoped_Transient.md
 │   ├── 03_Registering_Services.md
 │   └── 04_Constructor_Injection.md
 │
-├── I.Middleware_and_Filters/
+├── E.Controllers/
+│   ├── 01_Creating_Controllers.md
+│   ├── 02_Action_Methods.md
+│   ├── 03_IActionResult_vs_ActionResult_T.md
+│   ├── 04_Action_Results_Types.md
+│   ├── 05_Model_Binding_in_Controllers.md
+│   ├── 06_Controller_Base_vs_ControllerBase.md
+│   └── 07_Asynchronous_Action_Methods.md                
+│
+├── F.Views/
+│   ├── 01_Razor_View_Engine.md
+│   ├── 02_Razor_Syntax.md
+│   ├── 03_Layout_Pages.md
+│   ├── 04_Partial_Views.md
+│   ├── 05_View_Components.md
+│   ├── 06_Tag_Helpers.md
+│   └── 07_HTML_Helpers_vs_Tag_Helpers.md            
+│
+├── G.Data_Passing/
+│   ├── 01_ViewData.md
+│   ├── 02_ViewBag.md
+│   ├── 03_TempData.md
+│   └── 04_Strongly_Typed_Views.md
+│
+├── H.Model_Handling/
+│   ├── 01_Model_Binding.md
+│   ├── 02_Model_Validation.md
+│   ├── 03_Data_Annotations.md
+│   ├── 04_Fluent_Validation.md
+│   ├── 05_Custom_Validation_Attributes.md              
+│   └── 06_Client_Side_vs_Server_Side_Validation.md     
+│
+├── I.Middleware/                                      
 │   ├── 01_Middleware_Concepts.md
 │   ├── 02_Built_in_Middleware.md
-│   ├── 03_Custom_Middleware.md
-│   ├── 04_Filters_Overview.md
-│   ├── 05_Action_Filters.md
-│   └── 06_Exception_Filters.md
+│   └── 03_Custom_Middleware.md
 │
-├── J.Web_API/
+├── J.Filters/                                      
+│   ├── 01_Filters_Overview.md
+│   ├── 02_Action_Filters.md
+│   ├── 03_Exception_Filters.md
+│   ├── 04_Result_Filters.md                           
+│   └── 05_Filter_Execution_Order.md                  
+│
+├── K.DTOs_and_Mapping/                                  
+│   ├── 01_DTO_Pattern.md
+│   └── 02_AutoMapper_Basics.md
+│
+├── L.Web_API/
 │   ├── 01_API_Controllers.md
 │   ├── 02_ApiController_Attribute.md
 │   ├── 03_HTTP_Verbs.md
@@ -278,9 +238,16 @@ DotNet-Developer-Notes/
 │   ├── 05_FromBody_FromQuery_FromRoute.md
 │   ├── 06_Returning_JSON.md
 │   ├── 07_Status_Codes.md
-│   └── 08_Global_Exception_Handling.md
+│   ├── 08_Global_Exception_Handling.md
+│   ├── 09_API_Versioning.md                            
+│   └── 10_Model_Validation_in_Web_API.md              
 │
-├── K.Security/
+├── M.File_Handling/                                     
+│   ├── 01_File_Upload_Single_Multiple.md
+│   ├── 02_File_Download.md
+│   └── 03_File_Validation_Size_Type.md
+│
+├── N.Security/
 │   ├── 01_Authentication_Overview.md
 │   ├── 02_Cookie_Authentication.md
 │   ├── 03_JWT_Authentication.md
@@ -290,37 +257,49 @@ DotNet-Developer-Notes/
 │   ├── 07_Role_Based_Authorization.md
 │   ├── 08_Policy_Based_Authorization.md
 │   ├── 09_Claims_Based_Identity.md
-│   └── 10_CORS.md
+│   ├── 10_CORS.md
+│   ├── 11_Password_Hashing_BCrypt_vs_Identity.md      
+│   ├── 12_Data_Protection_API.md                      
+│   ├── 13_Anti_Forgery_Tokens_CSRF.md                  
+│   └── 14_XSS_and_SQL_Injection_Prevention.md          
 │
-├── L.State_Management/
+├── O.State_Management/
 │   ├── 01_Cookies.md
 │   ├── 02_Sessions.md
 │   └── 03_Distributed_Session.md
 │
-├── M.Caching/
+├── P.Caching/
 │   ├── 01_In_Memory_Cache.md
 │   ├── 02_Response_Caching.md
-│   └── 03_Distributed_Cache.md
+│   ├── 03_Distributed_Cache.md
+│   └── 04_Output_Caching_dotnet7plus.md          
 │
-├── N.Background_Services/
+├── Q.Background_Services/
 │   ├── 01_IHostedService.md
 │   └── 02_BackgroundService_Base_Class.md
 │
-├── O.Configuration/
+├── R.Configuration/
 │   ├── 01_appsettings_json.md
 │   ├── 02_Environment_Variables.md
 │   ├── 03_IConfiguration_Interface.md
 │   └── 04_Options_Pattern.md
 │
-├── P.Error_Handling/
+├── S.Error_Handling/
 │   ├── 01_Exception_Handling_Middleware.md
 │   └── 02_Custom_Error_Pages.md
 │
-└── Q.Deployment/
+├── T.Testing/                                          
+│   ├── 01_Unit_Testing_Controllers.md
+│   ├── 02_Mocking_Dependencies.md
+│   └── 03_Integration_Testing_WebApplicationFactory.md
+│
+└── U.Deployment/
     ├── 01_Environments_Dev_Staging_Prod.md
     ├── 02_Logging_with_ILogger.md
     ├── 03_Serilog_Setup.md
-    └── 04_Hosting_and_Publishing.md
+    ├── 04_Hosting_and_Publishing.md
+    ├── 05_Health_Checks.md                              
+    └── 06_Reverse_Proxy_Kestrel_and_IIS.md
 ```
 
 ---

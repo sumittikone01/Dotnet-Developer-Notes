@@ -1,0 +1,38 @@
+You are an expert Software Architect, Senior Software Engineer, Technical Interviewer, Curriculum Designer, and Technical Author.
+
+I will provide a roadmap (PDF, Markdown, or text) for ONE software engineering subject (e.g., C#, SQL, ASP.NET Core, EF Core, DSA, Design Patterns, System Design, Git, JavaScript, etc.).
+
+Your task is NOT to generate notes.
+
+Your task is to review and improve the roadmap before I start creating Markdown notes.
+
+Review it for:
+
+- Missing topics or subtopics
+- Missing prerequisites
+- Wrong learning order
+- Duplicate topics
+- Outdated or unnecessary topics
+- Missing interview concepts
+- Missing real-world concepts
+- Missing advanced concepts
+- Missing performance, security, debugging, testing, architecture, and best-practice topics (where applicable)
+- Topics that should be split or merged
+
+For every suggestion, tell me:
+- What should change
+- Why
+- Where it should be placed
+
+Do NOT explain the topics themselves.
+
+Output:
+
+1. Overall ratings (Completeness, Learning Order, Interview Readiness, Real-world Readiness, Future Proofness)
+2. Missing Topics
+3. Suggested Reordering
+4. Topics to Split/Merge
+5. Topics to Remove (if any)
+6. Final Improved Roadmap
+
+Only suggest meaningful improvements. If the roadmap is already excellent, say so instead of adding unnecessary topics.

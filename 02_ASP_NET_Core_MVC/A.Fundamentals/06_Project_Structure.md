@@ -1,3 +1,109 @@
+# 06 — Project Structure
+
+## 📌 What is it?
+
+The **default folder/file layout** of an ASP.NET Core MVC project — knowing what lives where is essential for navigating any project quickly, including ones you didn't build yourself.
+
+## 🖼 Default MVC project layout
+
+```
+MyApp/
+│
+├── Controllers/              ← C# classes handling requests, one per resource
+│   └── HomeController.cs
+│
+├── Models/                   ← Data classes, ViewModels, entities
+│   └── Product.cs
+│
+├── Views/                    ← Razor (.cshtml) templates, mirrors Controller names
+│   ├── Home/
+│   │   ├── Index.cshtml
+│   │   └── Privacy.cshtml
+│   ├── Shared/                ← Views/partials shared across controllers
+│   │   ├── _Layout.cshtml     ← master page template
+│   │   └── _ValidationScriptsPartial.cshtml
+│   └── _ViewStart.cshtml      ← runs before every view (sets default layout)
+│
+├── wwwroot/                  ← STATIC files only (CSS, JS, images, libs)
+│   ├── css/
+│   ├── js/
+│   ├── lib/                   ← client libraries (jQuery, Bootstrap, Kendo, etc.)
+│   └── images/
+│
+├── Properties/
+│   └── launchSettings.json    ← local dev run/debug configuration
+│
+├── appsettings.json           ← main configuration file
+├── appsettings.Development.json ← environment-specific overrides
+├── Program.cs                 ← app entry point (see topic 05)
+└── MyApp.csproj                ← project file (dependencies, SDK version)
+```
+
+## 🤔 Why do we need to know this?
+
+Convention-based structure means ASP.NET Core can **automatically find things** without you configuring paths manually:
+
+- A request to `/Home/Index` automatically maps to `HomeController.Index()` → looks for `Views/Home/Index.cshtml`
+- Anything in `wwwroot/` is automatically servable as a static file (e.g., `wwwroot/css/site.css` → `https://yoursite.com/css/site.css`)
+
+This "convention over configuration" approach is central to how MVC minimizes boilerplate.
+
+## 🧠 Intuition
+
+Think of it like a **well-organized office building**:
+
+- `Controllers/` = the reception desks (one per department, handles incoming requests)
+- `Models/` = the filing cabinets (where data structure lives)
+- `Views/` = the presentation materials handed to visitors
+- `wwwroot/` = the public lobby — anyone (any client) can grab things from here directly, no processing needed
+
+## 📊 Key folders explained
+
+| Folder/File                                    | Purpose                                                                                    |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `Controllers/`                               | Handles incoming requests, orchestrates Model + View                                       |
+| `Models/`                                    | Entity classes, ViewModels, DTOs                                                           |
+| `Views/{ControllerName}/{ActionName}.cshtml` | Razor view matching a specific action —**naming convention is critical**            |
+| `Views/Shared/`                              | Views reused across multiple controllers (layouts, partials, error pages)                  |
+| `Views/_ViewStart.cshtml`                    | Executes before each view renders — typically sets the default`_Layout.cshtml`          |
+| `Views/_ViewImports.cshtml`                  | Central place for`@using` statements and Tag Helper registration, shared by all views    |
+| `wwwroot/`                                   | The ONLY folder servable as static content by default — CSS, JS, images, client libraries |
+| `appsettings.json`                           | Configuration (connection strings, app settings, logging levels)                           |
+| `Program.cs`                                 | Bootstraps everything                                                                      |
+
+## 📊 Comparison: Web Forms structure vs MVC structure
+
+| Web Forms                                                      | MVC                                                              |
+| -------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `.aspx` + `.aspx.cs` code-behind pairs, scattered anywhere | `Controllers/` (logic) + `Views/` (markup) cleanly separated |
+| No enforced folder convention                                  | Strong naming convention:`Views/{Controller}/{Action}.cshtml`  |
+| Static files mixed anywhere in project                         | All static content isolated in`wwwroot/`                       |
+
+## 🚨 Common mistakes
+
+- Putting static files (CSS/JS/images) **outside** `wwwroot/` and expecting them to be servable — by default, only `wwwroot/` is exposed to HTTP requests.
+- Naming a View file incorrectly (e.g., `views/home/index.cshtml` lowercase mismatch on case-sensitive Linux deployments) — works fine on Windows dev machine, breaks in Linux production/Docker.
+- Forgetting `_ViewStart.cshtml` — views render without the expected layout/master page.
+
+## 💡 Best practices
+
+- Keep `wwwroot/` organized into subfolders (`css/`, `js/`, `lib/`, `images/`) rather than dumping everything at the root.
+- Use `Views/Shared/` for any partial view or layout used by more than one Controller.
+- Match folder/file casing consistently — even though Windows is case-insensitive, always assume Linux-style case sensitivity for production safety.
+
+## 🎤 Interview questions
+
+1. How does ASP.NET Core know which `.cshtml` file to render for a given Controller action?
+2. Why is `wwwroot/` special, and what happens if you put a JS file outside of it?
+3. What's the purpose of `_ViewStart.cshtml` and `_ViewImports.cshtml`?
+4. How would the default project structure need to change for a Web API-only project (no Views)?
+
+## 📝 30-second revision cheat sheet
+
+- `Controllers/` → logic, `Views/` → UI templates, `Models/` → data shapes, `wwwroot/` → static assets.
+- View naming convention: `Views/{ControllerName}/{ActionName}.cshtml`.
+- Only `wwwroot/` is servable as static content by default.
+- `_ViewStart.cshtml` sets default layout; `_ViewImports.cshtml` centralizes `@using`/Tag Helpers
 
 # 06 — Project Structure
 
@@ -463,15 +569,15 @@ User's Kendo Grid loads data: GET /api/employee?skip=0&take=10
 
 ## ⭐ Interview Quick-Fire
 
-| Question                                                             | Answer                                                                                        |
-| -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| What is the purpose of the `wwwroot`folder?                        | Stores static files (CSS, JS, images) served directly to the browser by `UseStaticFiles()`  |
-| What does `~`mean in a Razor view path?                            | Root of `wwwroot`—`~/css/site.css`→`wwwroot/css/site.css`                             |
-| What is `_Layout.cshtml`?                                          | The master page (shared header, footer, nav) that all views use by default                    |
-| What is `_ViewStart.cshtml`?                                       | Runs before every view — typically sets `Layout = "_Layout"`                               |
-| What is `_ViewImports.cshtml`?                                     | Adds shared `@using`and `@addTagHelper`directives to all views                            |
-| What is a ViewModel?                                                 | A C# class shaped for a specific view — not a DB entity, but exactly what the view needs     |
-| What is `launchSettings.json`?                                     | Dev-only config file for local server ports and environment variables — NOT deployed         |
-| What is `.csproj`for?                                              | Defines the .NET version and NuGet package references for the project                         |
-| What is the difference between `Controller`and `ControllerBase`? | `Controller`= MVC (has `View()`,`ViewBag`)`ControllerBase`= API only (JSON responses) |
-| Where do you register your DAL in ASP.NET Core?                      | `Program.cs`—`builder.Services.AddScoped<EmployeeDAL>()`                                 |
+| Question                                                            | Answer                                                                                        |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| What is the purpose of the`wwwroot`folder?                        | Stores static files (CSS, JS, images) served directly to the browser by`UseStaticFiles()`   |
+| What does`~`mean in a Razor view path?                            | Root of`wwwroot`—`~/css/site.css`→`wwwroot/css/site.css`                              |
+| What is`_Layout.cshtml`?                                          | The master page (shared header, footer, nav) that all views use by default                    |
+| What is`_ViewStart.cshtml`?                                       | Runs before every view — typically sets`Layout = "_Layout"`                                |
+| What is`_ViewImports.cshtml`?                                     | Adds shared`@using`and `@addTagHelper`directives to all views                             |
+| What is a ViewModel?                                                | A C# class shaped for a specific view — not a DB entity, but exactly what the view needs     |
+| What is`launchSettings.json`?                                     | Dev-only config file for local server ports and environment variables — NOT deployed         |
+| What is`.csproj`for?                                              | Defines the .NET version and NuGet package references for the project                         |
+| What is the difference between`Controller`and `ControllerBase`? | `Controller`= MVC (has `View()`,`ViewBag`)`ControllerBase`= API only (JSON responses) |
+| Where do you register your DAL in ASP.NET Core?                     | `Program.cs`—`builder.Services.AddScoped<EmployeeDAL>()`                                 |

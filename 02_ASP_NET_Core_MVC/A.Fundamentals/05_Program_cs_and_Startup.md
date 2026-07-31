@@ -1,3 +1,144 @@
+# 05 — Program.cs and Startup
+
+## 📌 What is it?
+
+`Program.cs` is the **entry point** of every ASP.NET Core application — the equivalent of `Global.asax` + `Startup.cs` combined. It's where you:
+
+1. Create the app builder
+2. Register services into the **DI container**
+3. Build the app
+4. Configure the **middleware pipeline**
+5. Run the app
+
+## 🤔 Why do we need it?
+
+Every app needs a defined starting point that wires together configuration, services, and the request pipeline before it can start listening for requests. ASP.NET Core needed one unified, minimal place to do this — and evolved toward putting it all in a single file for simplicity.
+
+## 🧠 Intuition
+
+`Program.cs` is like the **setup checklist before a restaurant opens for the day**: stock the kitchen (register services), set the table arrangement (configure middleware order), then unlock the doors (run the app).
+
+## ⚙️ The evolution (important context)
+
+| .NET version           | Structure                                                                                                            |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| .NET Core 3.1 / .NET 5 | `Program.cs` (bootstraps `Startup.cs`) + `Startup.cs` (has `ConfigureServices()` and `Configure()`)        |
+| .NET 6 and later       | **Unified `Program.cs`** — `Startup.cs` merged in via "Minimal Hosting Model", using top-level statements |
+
+You will likely see **both styles** in tutorials/legacy code, so recognize both.
+
+### Old style (.NET 5 and earlier) — two files
+
+```csharp
+// Program.cs
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        CreateHostBuilder(args).Build().Run();
+    }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
+}
+```
+
+```csharp
+// Startup.cs
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddControllersWithViews(); // register services (DI)
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        app.UseRouting();                    // configure pipeline
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+        });
+    }
+}
+```
+
+### New style (.NET 6+) — single unified file
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+// ── Equivalent of old ConfigureServices() ──
+builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IProductService, ProductService>();
+
+var app = builder.Build();
+
+// ── Equivalent of old Configure() ──
+app.UseRouting();
+app.UseAuthorization();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();
+```
+
+## 🖼 Mental model — two clear halves
+
+```
+┌───────────────────────────────────────┐
+│  1. builder.Services.Add...()          │  ← Registers things INTO the DI container
+│     (was: ConfigureServices)            │     "What services exist?"
+├───────────────────────────────────────┤
+│         var app = builder.Build();      │  ← Builds the actual application
+├───────────────────────────────────────┤
+│  2. app.Use...() / app.Map...()         │  ← Configures the MIDDLEWARE PIPELINE
+│     (was: Configure)                     │     "What happens to each request?"
+├───────────────────────────────────────┤
+│              app.Run();                 │  ← Starts listening for requests
+└───────────────────────────────────────┘
+```
+
+## 📊 Comparison: Global.asax vs Program.cs (for your Framework background)
+
+| Global.asax (Framework)                     | Program.cs (Core)                            |
+| ------------------------------------------- | -------------------------------------------- |
+| `Application_Start()`                     | `builder.Services.Add...()` section        |
+| `RouteConfig.RegisterRoutes()`            | `app.MapControllerRoute(...)`              |
+| `BundleConfig`, `FilterConfig`          | Handled via services/middleware registration |
+| Implicit, scattered across App_Start folder | Explicit, centralized in one file            |
+
+## 🚨 Common mistakes
+
+- Registering a service (`builder.Services.Add...`) **after** `builder.Build()` — this will fail; all service registration must happen before `Build()` is called.
+- Confusing the two "halves" — trying to configure middleware order (`app.Use...`) in the services section, or vice versa.
+- Copy-pasting old `Startup.cs`-style tutorials without realizing you're on .NET 6+ and need the unified format (or vice versa).
+
+## 💡 Best practices
+
+- Keep `Program.cs` clean — for larger apps, extract service registration into extension methods (e.g., `builder.Services.AddApplicationServices()`).
+- Always register services in a logical order but remember: **registration order among services generally doesn't matter** (DI resolves by type), but **middleware order absolutely does matter**.
+
+## 🎤 Interview questions
+
+1. What are the two conceptual "halves" of `Program.cs`, and what does each one do?
+2. How did `Startup.cs` get merged into `Program.cs` in .NET 6? Why did Microsoft make this change (simplicity, less boilerplate)?
+3. What happens if you try to call `builder.Services.AddScoped<T>()` after `builder.Build()`?
+4. What is the old-style equivalent of `app.MapControllerRoute()` in ASP.NET Framework?
+
+## 📝 30-second revision cheat sheet
+
+- `Program.cs` = single entry point: register services → build app → configure pipeline → run.
+- Pre-.NET 6: split into `Program.cs` + `Startup.cs` (`ConfigureServices` + `Configure`).
+- .NET 6+: unified into one file using top-level statements.
+- Services registration = "what exists", Middleware config = "what happens to requests" — don't confuse the two sections
 
 # 05 — Program.cs and Startup
 
@@ -426,14 +567,14 @@ app.Run();
 
 ## ⭐ Interview Quick-Fire
 
-| Question                                                                        | Answer                                                                                        |
-| ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| What is `Program.cs`in ASP.NET Core?                                          | The entry point — registers services (DI) and configures the middleware pipeline             |
-| What did `Startup.cs`do and where is it now?                                  | Had `ConfigureServices`and `Configure`methods — both merged into `Program.cs`in .NET 6 |
-| What does `builder.Services.AddScoped<T>()`do?                                | Registers a class in the DI container with scoped lifetime (one instance per request)         |
-| What is the difference between `AddScoped`,`AddTransient`,`AddSingleton`? | Scoped = per request, Transient = per injection, Singleton = once for entire app              |
-| When does `builder.Build()`get called?                                        | After all services are registered — locks the DI container                                   |
-| Can you register services after `builder.Build()`?                            | ❌ No — container is finalized after Build()                                                 |
-| What is `IsDevelopment()`used for?                                            | To show detailed error pages and verbose logging only in development, not production          |
-| How does ASP.NET Core read `appsettings.json`?                                | Automatically via `WebApplication.CreateBuilder(args)`— no extra code needed               |
-| What overrides `appsettings.json`?                                            | `appsettings.{Environment}.json`→ Environment variables → Command-line args               |
+| Question                                                                       | Answer                                                                                       |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| What is`Program.cs`in ASP.NET Core?                                          | The entry point — registers services (DI) and configures the middleware pipeline            |
+| What did`Startup.cs`do and where is it now?                                  | Had`ConfigureServices`and `Configure`methods — both merged into `Program.cs`in .NET 6 |
+| What does`builder.Services.AddScoped<T>()`do?                                | Registers a class in the DI container with scoped lifetime (one instance per request)        |
+| What is the difference between`AddScoped`,`AddTransient`,`AddSingleton`? | Scoped = per request, Transient = per injection, Singleton = once for entire app             |
+| When does`builder.Build()`get called?                                        | After all services are registered — locks the DI container                                  |
+| Can you register services after`builder.Build()`?                            | ❌ No — container is finalized after Build()                                                |
+| What is`IsDevelopment()`used for?                                            | To show detailed error pages and verbose logging only in development, not production         |
+| How does ASP.NET Core read`appsettings.json`?                                | Automatically via`WebApplication.CreateBuilder(args)`— no extra code needed               |
+| What overrides`appsettings.json`?                                            | `appsettings.{Environment}.json`→ Environment variables → Command-line args              |
