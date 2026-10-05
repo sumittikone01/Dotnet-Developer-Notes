@@ -10,9 +10,9 @@
 
 ```
 ┌──────────────┐      ┌──────────────┐      ┌──────────────┐      ┌──────────────────┐
-│  Controller   │ ───► │     BAL       │ ───► │     DAL       │ ───► │  Stored Procedure  │
-│  (HTTP layer) │      │ (business     │      │ (data access) │      │  (SQL Server)      │
-│               │      │  logic)       │      │               │      │                    │
+│  Controller  │ ───► │     BAL      │ ───► │    DAL       │ ───► │Stored Procedure  │
+│  (HTTP layer)│      │ (business    │      │(data access) │      │(SQL Server)      │
+│              │      │  logic)      │      │              │      │                  │
 └──────────────┘      └──────────────┘      └──────────────┘      └──────────────────┘
 ```
 
@@ -151,35 +151,4 @@ builder.Services.AddScoped<OrderService>();
 - Controller (HTTP) → BAL (business logic) → DAL (data access) → Stored Procedure
 - Each layer = SRP in action | Interfaces between layers = DIP + ISP in action
 - Strategy-pattern-style extensibility (like discount calculation) = OCP in action
-- ASP.NET Core's built-in DI container wires it all together via constructor injectio
-
-# SOLID in Controller BAL DAL
-
----
-
-## 📌 Overview
-
-> Write your notes here.
-
----
-
-## 🔑 Key Concepts
-
----
-
-## 💻 Code Example
-
-```csharp
-```
-
----
-
-## ❓ Interview Questions
-
----
-
-## 🔗 Related Topics
-
----
-
-*Last updated: 2026-03-15*
+- ASP.NET Core's built-in DI container wires it all together via constructor injection

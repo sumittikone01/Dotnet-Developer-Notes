@@ -1,5 +1,3 @@
-    
-
 # 📁 Namespaces & Using Directives
 
 ## 📌 What is it?

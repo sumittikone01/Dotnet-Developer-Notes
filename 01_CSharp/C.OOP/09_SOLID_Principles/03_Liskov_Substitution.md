@@ -30,7 +30,7 @@ public class Square : Rectangle   // "mathematically" a Square IS-A Rectangle...
         get => base.Height;
         set { base.Width = value; base.Height = value; }
     }
-}
+} 
 
 void TestRectangle(Rectangle r)
 {
@@ -105,35 +105,4 @@ public class Square : Shape   // no longer inherits Rectangle — sibling relati
 - LSP = derived class must be a true behavioral substitute for its base class
 - Classic violation example: Square inheriting Rectangle
 - Red flags: `NotImplementedException` in overrides, unexpected behavior changes, client-side type checks
-- Fix: reconsider the hierarchy — sometimes sibling classes under a shared abstraction work better than forced inheritanc
-
-# Liskov Substitution Principle
-
----
-
-## 📌 Overview
-
-> Write your notes here.
-
----
-
-## 🔑 Key Concepts
-
----
-
-## 💻 Code Example
-
-```csharp
-```
-
----
-
-## ❓ Interview Questions
-
----
-
-## 🔗 Related Topics
-
----
-
-*Last updated: 2026-03-15*
+- Fix: reconsider the hierarchy — sometimes sibling classes under a shared abstraction work better than forced inheritance
